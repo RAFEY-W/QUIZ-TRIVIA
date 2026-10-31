@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#10121c">
+  <title>Quickfire — Trivia Night</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Quickfire home"><span class="brand-mark">✳</span> quickfire<span class="brand-period">.</span></a>
+      <div class="top-note"><span class="live-dot"></span> GOOD EVENING, QUIZMASTER</div>
+      <button class="help-button" id="helpButton" aria-label="How to play">?</button>
+    </header>
+
+    <main>
+      <section class="lobby-view" id="lobbyView">
+        <div class="hero-copy">
+          <div class="eyebrow"><span>✳</span> THE FRIENDLY FIGHT FOR BRAGGING RIGHTS</div>
+          <h1>Think fast.<br><span>Buzz first.</span></h1>
+          <p class="hero-subtitle">Riddles, random facts, numbers — anything goes.<br>Grab your people and find out who knows their stuff.</p>
+        </div>
+        <div class="lobby-card">
+          <div class="card-heading"><div><span class="section-kicker">YOUR NEXT GREAT NIGHT IN</span><h2>Get in the game</h2></div><span class="players-badge">♟ &nbsp;UP TO 4 PLAYERS</span></div>
+          <label class="field-label" for="playerName">YOUR NAME</label>
+          <input id="playerName" class="text-input" maxlength="18" placeholder="What should we call you?" autocomplete="nickname">
+          <button class="button button-primary" id="createButton">Create a room <span>↗</span></button>
+          <div class="or-divider"><span></span> OR JOIN AN EXISTING ROOM <span></span></div>
+          <button class="button button-outline join-trigger" id="showJoinButton">Join a room <span>↗</span></button>
+          <div class="join-form hidden" id="joinForm"><label class="field-label" for="roomCode">ENTER THE ROOM CODE</label><input id="roomCode" class="text-input code-input" maxlength="5" placeholder="5-letter code" autocomplete="off"><div class="join-form-actions"><button class="button button-primary" id="joinButton">Join room <span>↗</span></button><button class="cancel-join" id="cancelJoinButton">Cancel</button></div></div>
+          <p class="card-footnote">No accounts. No fuss. Just friends and fast answers.</p>
+          <p class="error-message" id="lobbyError" role="alert"></p>
+        </div>
+        <div class="bottom-note"><span>01</span> ONE ROOM <i>·</i> FOUR PLAYERS <i>·</i> ENDLESS QUESTIONS <span class="bottom-star">✳</span></div>
+      </section>
+
+      <section class="game-view hidden" id="gameView">
+        <div class="game-topline"><button class="back-button" id="leaveButton">← <span>Leave room</span></button><div class="room-pill"><span class="live-dot"></span> ROOM <strong id="displayRoomCode">—</strong><button id="copyCode" aria-label="Copy room code">▢</button></div><div class="round-pill">ROUND <strong id="roundNumber">01</strong></div></div>
+        <div class="game-layout">
+          <section class="play-panel">
+            <div class="question-meta"><span class="category-tag" id="categoryTag">GENERAL KNOWLEDGE</span><span class="question-count" id="questionCount">QUESTION 01 / 10</span></div>
+            <div class="question-area"><div class="question-icon" id="questionIcon">✳</div><p class="question-text" id="questionText"></p><div class="phase-message" id="phaseMessage">Waiting for the host to start the round</div></div>
+            <div class="buzz-area"><div class="buzz-status" id="buzzStatus">GET READY</div><button class="button button-primary start-round-button hidden" id="startRoundButton">Start round →</button><button class="buzzer" id="buzzerButton" disabled><span class="buzzer-ring"></span><span class="buzzer-label">BUZZ!</span><span class="buzzer-hint">OR PRESS SPACE</span></button><p class="buzz-caption" id="buzzCaption">Buzz as soon as the round begins — even before the question appears.</p></div>
+            <div class="answer-area hidden" id="answerArea"><div class="answer-label" id="answerLabel">BUZZER LOCKED</div><div class="answer-text" id="answerText"></div><div class="answer-key" id="answerKey"></div><div class="host-answer-tools hidden" id="hostAnswerTools"><div class="judge-row"><button class="button correct-button" id="correctButton">Correct +1</button><button class="button incorrect-button" id="incorrectButton">Incorrect</button></div></div><button class="button button-primary next-button hidden" id="nextButton">Next question <span>→</span></button></div>
+          </section>
+          <aside class="players-panel"><div class="panel-title"><div><span class="section-kicker">THE LINEUP</span><h2>Players <span id="playerCount">1</span><small>/ 4</small></h2></div><span class="lineup-icon">♟</span></div><div class="player-list" id="playerList"></div><div class="panel-tip"><span>✳</span><p>Quick fingers.<br><strong>Good sportsmanship.</strong></p></div><div class="host-note" id="hostNote"></div></aside>
+        </div>
+        <div class="game-footer"><span>QUICKFIRE <i>·</i> GOOD QUESTIONS, BETTER COMPANY</span><span>✳</span></div>
+      </section>
+    </main>
+    <div class="toast" id="toast" role="status"></div>
+    <dialog id="helpDialog"><button class="dialog-close" id="closeHelp" aria-label="Close">×</button><span class="section-kicker">HOW TO PLAY</span><h2>Fast fingers, fair game.</h2><ol><li><strong>Create a room</strong> and share the five-letter code with up to three friends.</li><li>Everyone joins on their own device with a name.</li><li>Read the question, then <strong>buzz first</strong> to claim the answer.</li><li>Get it right for a point. Pass the device around if you're playing together.</li></ol><p class="dialog-note">Room codes connect players across devices while the host stays online. Some restrictive networks may block direct browser connections.</p></dialog>
+  </div>
+  <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
