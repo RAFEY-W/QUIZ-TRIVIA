@@ -1,32 +1,32 @@
 (() => {
   const $ = (selector) => document.querySelector(selector);
   const lobbyView=$('#lobbyView'), gameView=$('#gameView'), nameInput=$('#playerName'), codeInput=$('#roomCode'), lobbyError=$('#lobbyError');
-  const buzzer=$('#buzzerButton'), answerArea=$('#answerArea');
+  const buzzer=$('#buzzerButton'), answerArea=$('#answerArea'), answerForm=$('#answerForm'), answerInput=$('#answerInput');
   const PLAYER_KEY='quickfire-player-v3';
   const COUNTDOWN_MS=5000, LETTER_MS=115;
   const bank=[
-    {category:'RIDDLE',icon:'◇',q:'I have cities, but no houses. I have mountains, but no trees. I have water, but no fish. What am I?',a:'A map.'},
-    {category:'MATH',icon:'＋',q:'A bat and a ball cost $1.10 together. The bat costs one dollar more than the ball. How much does the ball cost?',a:'5 cents.'},
-    {category:'GENERAL KNOWLEDGE',icon:'✳',q:'Which planet in our solar system has the most moons?',a:'Saturn.'},
-    {category:'RIDDLE',icon:'◇',q:'What gets wetter the more it dries?',a:'A towel.'},
-    {category:'MATH',icon:'＋',q:'What is the next number in this sequence: 2, 3, 5, 8, 12, …?',a:'17. The gaps grow by one each time.'},
-    {category:'GENERAL KNOWLEDGE',icon:'✳',q:'What is the only mammal capable of true flight?',a:'A bat.'},
-    {category:'RIDDLE',icon:'◇',q:'I speak without a mouth and hear without ears. I have no body, but come alive with the wind. What am I?',a:'An echo.'},
-    {category:'MATH',icon:'＋',q:'If you take 3 apples from a pile of 8, how many apples do you have?',a:'3 — the ones you took.'},
-    {category:'GENERAL KNOWLEDGE',icon:'✳',q:'What is the smallest country in the world by area?',a:'Vatican City.'},
-    {category:'RIDDLE',icon:'◇',q:'The more you take, the more you leave behind. What are they?',a:'Footsteps.'},
-    {category:'MATH',icon:'＋',q:'A farmer has 17 sheep. All but 9 run away. How many are left?',a:'9 sheep.'},
-    {category:'GENERAL KNOWLEDGE',icon:'✳',q:'Which ocean is the largest on Earth?',a:'The Pacific Ocean.'},
-    {category:'RIDDLE',icon:'◇',q:'What has one eye but cannot see?',a:'A needle.'},
-    {category:'MATH',icon:'＋',q:'You have 12 eggs and all but 5 break. How many unbroken eggs remain?',a:'5 eggs.'},
-    {category:'GENERAL KNOWLEDGE',icon:'✳',q:'What is the chemical symbol for gold?',a:'Au.'},
-    {category:'RIDDLE',icon:'◇',q:'What can travel around the world while staying in one corner?',a:'A stamp.'},
-    {category:'MATH',icon:'＋',q:'A clock takes 5 seconds to strike 6. How long does it take to strike 12?',a:'11 seconds — there are 11 intervals.'},
-    {category:'GENERAL KNOWLEDGE',icon:'✳',q:'How many hearts does an octopus have?',a:'Three.'},
-    {category:'RIDDLE',icon:'◇',q:'What has keys but no locks, space but no room, and you can enter but not go inside?',a:'A keyboard.'},
-    {category:'MATH',icon:'＋',q:'What is 25% of 80?',a:'20.'}
+    {category:'RIDDLE',icon:'◇',q:'I have cities, but no houses. I have mountains, but no trees. I have water, but no fish. What am I?',a:'map',accepted:['a map']},
+    {category:'MATH',icon:'＋',q:'A bat and a ball cost $1.10 together. The bat costs one dollar more than the ball. How much does the ball cost?',a:'5 cents',accepted:['five cents','five cent','0.05','5¢']},
+    {category:'GENERAL KNOWLEDGE',icon:'✳',q:'Which planet in our solar system has the most moons?',a:'saturn'},
+    {category:'RIDDLE',icon:'◇',q:'What gets wetter the more it dries?',a:'towel',accepted:['a towel']},
+    {category:'MATH',icon:'＋',q:'What is the next number in this sequence: 2, 3, 5, 8, 12, …?',a:'17',accepted:['seventeen']},
+    {category:'GENERAL KNOWLEDGE',icon:'✳',q:'What is the only mammal capable of true flight?',a:'bat',accepted:['a bat']},
+    {category:'RIDDLE',icon:'◇',q:'I speak without a mouth and hear without ears. I have no body, but come alive with the wind. What am I?',a:'echo',accepted:['an echo']},
+    {category:'MATH',icon:'＋',q:'If you take 3 apples from a pile of 8, how many apples do you have?',a:'3',accepted:['three','three apples']},
+    {category:'GENERAL KNOWLEDGE',icon:'✳',q:'What is the smallest country in the world by area?',a:'vatican city'},
+    {category:'RIDDLE',icon:'◇',q:'The more you take, the more you leave behind. What are they?',a:'footsteps'},
+    {category:'MATH',icon:'＋',q:'A farmer has 17 sheep. All but 9 run away. How many are left?',a:'9',accepted:['nine','9 sheep','nine sheep']},
+    {category:'GENERAL KNOWLEDGE',icon:'✳',q:'Which ocean is the largest on Earth?',a:'pacific ocean',accepted:['pacific','the pacific','the pacific ocean']},
+    {category:'RIDDLE',icon:'◇',q:'What has one eye but cannot see?',a:'needle',accepted:['a needle']},
+    {category:'MATH',icon:'＋',q:'You have 12 eggs and all but 5 break. How many unbroken eggs remain?',a:'5',accepted:['five','5 eggs','five eggs']},
+    {category:'GENERAL KNOWLEDGE',icon:'✳',q:'What is the chemical symbol for gold?',a:'au'},
+    {category:'RIDDLE',icon:'◇',q:'What can travel around the world while staying in one corner?',a:'stamp',accepted:['a stamp']},
+    {category:'MATH',icon:'＋',q:'A clock takes 5 seconds to strike 6. How long does it take to strike 12?',a:'11 seconds',accepted:['11','eleven seconds','eleven']},
+    {category:'GENERAL KNOWLEDGE',icon:'✳',q:'How many hearts does an octopus have?',a:'3',accepted:['three']},
+    {category:'RIDDLE',icon:'◇',q:'What has keys but no locks, space but no room, and you can enter but not go inside?',a:'keyboard',accepted:['a keyboard']},
+    {category:'MATH',icon:'＋',q:'What is 25% of 80?',a:'20',accepted:['twenty']}
   ];
-  let roomCode='',myId='',isHost=false,room=null,tickTimer=null,toastTimer=null,peer=null,hostConnection=null,hostOffset=0,pendingJoinTimer=null;
+  let roomCode='',myId='',isHost=false,room=null,tickTimer=null,toastTimer=null,peer=null,hostConnection=null,hostOffset=0,pendingJoinTimer=null,answerPending=false,answerPromptKey='';
   const hostConnections=new Map();
   const now=()=>Date.now()+hostOffset;
   const hostPeerId=code=>`quickfire-${code.toLowerCase()}`;
@@ -71,7 +71,7 @@
           if(room.players.some(p=>p.name.trim().toLocaleLowerCase()===playerName.toLocaleLowerCase())){connection.send({type:'join-rejected',reason:'A player with that name already exists in the room. Please change your name.'});return}
           if(room.players.length>=4){connection.send({type:'join-rejected',reason:'This room is full. There are already four players.'});return}
           const player={id:makeId(),name:playerName,score:0};room.players.push(player);connection.playerId=player.id;hostConnections.set(player.id,connection);
-          connection.send({type:'join-accepted',playerId:player.id,room,hostNow:Date.now()});broadcastRoom();render();return;
+          connection.send({type:'join-accepted',playerId:player.id,room:publicRoom(),hostNow:Date.now()});broadcastRoom();render();return;
         }
         if(message.type==='action'&&connection.playerId){handleGuestAction(connection.playerId,message.action)}
       });
@@ -88,7 +88,7 @@
     const name=nameInput.value.trim();if(!name){setError('Add your name first so everyone knows who buzzed.');nameInput.focus();return}setError('');
     let code=makeCode();
     myId=makeId();isHost=true;sessionStorage.setItem(PLAYER_KEY,myId);
-    roomCode=code;room={code,hostId:myId,players:[{id:myId,name,score:0}],questions:shuffleQuestions(),index:0,phase:'waiting',phaseStartedAt:null,buzz:null,answerRevealed:false,createdAt:Date.now()};
+    roomCode=code;room={code,hostId:myId,players:[{id:myId,name,score:0}],questions:shuffleQuestions(),index:0,phase:'waiting',phaseStartedAt:null,buzz:null,createdAt:Date.now()};
     startHostPeer();
   }
   function joinRoom(){
@@ -101,13 +101,28 @@
     peer.on('error',error=>{if(error.type==='peer-unavailable'||error.type==='server-error')showLobbyError(`No room exists with code ${code}. Check the code and try again.`)});
     pendingJoinTimer=setTimeout(()=>{if(!room)showLobbyError(`No room exists with code ${code}, or the host is not connected.`)},9000);
   }
-  function sendSnapshot(connection){if(connection.open)connection.send({type:'state',room,hostNow:Date.now()})}
+  function publicRoom(){const snapshot=JSON.parse(JSON.stringify(room));snapshot.questions.forEach(question=>{delete question.a;delete question.accepted});return snapshot}
+  function sendSnapshot(connection){if(connection.open)connection.send({type:'state',room:publicRoom(),hostNow:Date.now()})}
   function broadcastRoom(){for(const connection of hostConnections.values())sendSnapshot(connection)}
   function updateRoom(mutator){if(!isHost){return}if(!room)return;mutator(room);broadcastRoom();render()}
   function handleGuestAction(playerId,action){
     if(!action||!room)return;
     if(action.type==='buzz')captureBuzz(playerId);
+    else if(action.type==='submit-answer')checkAnswer(playerId,action.answer);
     else if(action.type==='leave'){const connection=hostConnections.get(playerId);if(connection)connection.close()}
+  }
+
+  function normalizeAnswer(value){return String(value??'').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^\p{L}\p{N}]+/gu,' ').trim().replace(/\s+/g,' ').replace(/^(a|an|the)\s+/,'')}
+  function submitAnswer(event){
+    event.preventDefault();if(!room||room.phase!=='buzzed'||room.buzz?.playerId!==myId||answerPending)return;
+    const answer=answerInput.value.toLowerCase().trim();if(!answer){showToast('Type your answer first.');answerInput.focus();return}
+    answerInput.value=answer;answerPending=true;$('#answerResult').textContent='Checking your answer…';$('#answerResult').classList.remove('hidden');
+    if(isHost)checkAnswer(myId,answer);else if(hostConnection?.open)hostConnection.send({type:'action',action:{type:'submit-answer',answer}});else{answerPending=false;showToast('Lost the room connection. Try rejoining.')}
+  }
+  function checkAnswer(playerId,submitted){
+    if(!isHost||!room||room.phase!=='buzzed'||room.buzz?.playerId!==playerId)return;
+    const question=room.questions[room.index],accepted=[question.a,...(question.accepted||[])].map(normalizeAnswer),correct=accepted.includes(normalizeAnswer(submitted));
+    updateRoom(current=>{current.result={correct,submitted:String(submitted).toLowerCase().trim(),answer:question.a};if(correct){const player=current.players.find(entry=>entry.id===playerId);if(player)player.score++}current.phase='judged';current.answerRevealed=true});
   }
 
   function roundClock(value){
@@ -123,7 +138,7 @@
   }
   function startRound(){
     if(!isHost||!room||!['waiting','judged'].includes(room.phase))return;
-    updateRoom(current=>{current.phase='countdown';current.phaseStartedAt=Date.now();current.buzz=null;current.answerRevealed=false});
+    updateRoom(current=>{current.phase='countdown';current.phaseStartedAt=Date.now();current.buzz=null;current.result=null;answerPending=false;answerInput.value=''});
   }
   function buzz(){
     if(!room||!['countdown','reveal'].includes(room.phase))return;
@@ -158,26 +173,31 @@
     else if(clock.phase==='buzzed'){phaseMessage.textContent='';phaseMessage.classList.add('hidden');makeQuestionText(q.q,room.buzz?.visible??0,false)}
     else {phaseMessage.textContent='Answer judged';phaseMessage.classList.remove('hidden');makeQuestionText(q.q,q.q.length,false)}
     $('#buzzStatus').textContent=winner?`${winner.name.toUpperCase()} GOT THERE FIRST`:clock.phase==='waiting'?'WAITING FOR THE HOST':clock.phase==='countdown'?`BUZZ NOW · QUESTION IN ${clock.count}`:clock.phase==='reveal'?'QUESTION REVEALING · BUZZ ANYTIME':'ANSWER JUDGED';
-    $('#buzzCaption').textContent=winner?(winner.id===myId?`Your answer is locked in at ${room.buzz.phase==='countdown'?'the countdown':`${room.buzz.visible} revealed characters`}. Say it out loud.`:`${winner.name} buzzed first. They answer using only what was visible.`):clock.phase==='waiting'?(isHost?'Start the round to begin the 5-second countdown.':'The host will start the 5-second countdown.'):'Buzz now — the question keeps revealing letter by letter.';
+    $('#buzzCaption').textContent=winner?(winner.id===myId?`You buzzed at ${room.buzz.phase==='countdown'?'the countdown':`${room.buzz.visible} revealed characters`}. Enter your answer below.`:`${winner.name} buzzed first. They have the answer box.`):clock.phase==='waiting'?(isHost?'Start the round to begin the 5-second countdown.':'The host will start the 5-second countdown.'):'Buzz now — the question keeps revealing letter by letter.';
     buzzer.disabled=!['countdown','reveal'].includes(clock.phase);buzzer.classList.toggle('buzzed',winner?.id===myId);
     const buzzed=clock.phase==='buzzed',judged=clock.phase==='judged';answerArea.classList.toggle('hidden',!buzzed&&!judged);
+    const promptKey=buzzed?`${room.index}:${room.buzz.playerId}`:'';
+    if(promptKey&&promptKey!==answerPromptKey){answerInput.value='';answerPending=false;answerPromptKey=promptKey}
+    if(judged)answerPending=false;
     if(buzzed||judged){
-      $('#answerLabel').textContent=room.buzz.phase==='countdown'?'BLIND BUZZ · ANSWER NOW':`BUZZED AT ${room.buzz.visible} REVEALED CHARACTERS`;
-      $('#answerText').textContent=winner?.id===myId?'Your turn to answer!':`${winner?.name||'A player'} is answering now.`;
-      $('#hostAnswerTools').classList.toggle('hidden',!isHost||room.phase!=='buzzed');
-      $('#answerKey').textContent=isHost||judged?`Answer key: ${q.a}`:'';
+      $('#answerLabel').textContent=judged?'ANSWER CHECKED':room.buzz.phase==='countdown'?'BLIND BUZZ · ANSWER NOW':`BUZZED AT ${room.buzz.visible} REVEALED CHARACTERS`;
+      $('#answerText').textContent=judged?`Submitted: ${room.result?.submitted||''}`:winner?.id===myId?'Your turn — type your answer below.':`${winner?.name||'A player'} is entering an answer.`;
+      answerForm.classList.toggle('hidden',!buzzed||winner?.id!==myId);
+      answerInput.disabled=answerPending||judged;$('#submitAnswerButton').disabled=answerPending||judged;
+      const answerResult=$('#answerResult');
+      if(judged){answerResult.textContent=room.result?.correct?`Correct! +1 point. The answer was ${room.result.answer}.`:`Not quite. The correct answer was ${room.result?.answer||'not available'}.`;answerResult.classList.remove('hidden')}
+      else if(answerPending){answerResult.textContent='Checking your answer…';answerResult.classList.remove('hidden')}
+      else answerResult.classList.add('hidden');
       $('#nextButton').classList.toggle('hidden',!isHost||room.phase!=='judged');
-      $('#correctButton').disabled=room.phase==='judged';$('#incorrectButton').disabled=room.phase==='judged';
-    }
+    }else{answerForm.classList.add('hidden');$('#answerResult').classList.add('hidden')}
     $('#startRoundButton').classList.toggle('hidden',!isHost||room.phase!=='waiting');
     $('#startRoundButton').textContent='Start round →';
-    $('#hostNote').textContent=isHost?'You’re the host. Start the countdown, then judge the spoken answer.':'The host starts each round. Buzz during the countdown or as the question reveals.';
+    $('#hostNote').textContent=isHost?'You’re the host. Start the countdown and keep the game moving.':'The host starts each round. Buzz during the countdown or as the question reveals.';
     const list=$('#playerList');list.replaceChildren();
     room.players.forEach(p=>{const row=document.createElement('div');row.className='player-row'+(p.id===room.buzz?.playerId?' is-first':'');const avatar=document.createElement('div');avatar.className='player-avatar';avatar.textContent=p.name.slice(0,1).toUpperCase();const info=document.createElement('div');info.style.minWidth='0';const pname=document.createElement('div');pname.className='player-name';pname.textContent=p.name;info.append(pname);const tags=document.createElement('div');tags.className='player-tags';if(p.id===room.hostId){const t=document.createElement('span');t.className='player-tag';t.textContent='HOST';tags.append(t)}if(p.id===room.buzz?.playerId){const t=document.createElement('span');t.className='player-tag first-tag';t.textContent='FIRST BUZZ';tags.append(t)}if(tags.childElementCount)info.append(tags);const score=document.createElement('div');score.className='player-score';score.innerHTML=`<strong>${p.score}</strong> pts`;row.append(avatar,info,score);list.append(row)});
     for(let i=room.players.length;i<4;i++){const waiting=document.createElement('div');waiting.className='waiting-row';waiting.innerHTML='<span>+</span> Open seat';list.append(waiting)}
   }
-  function judge(correct){if(!isHost||!room||room.phase!=='buzzed')return;updateRoom(current=>{if(correct){const p=current.players.find(player=>player.id===current.buzz?.playerId);if(p)p.score++}current.phase='judged';current.answerRevealed=true});}
-  function nextQuestion(){if(!isHost||!room||room.phase!=='judged')return;updateRoom(current=>{current.index++;if(current.index>=current.questions.length){current.questions=shuffleQuestions();current.index=0}current.phase='waiting';current.phaseStartedAt=null;current.buzz=null;current.answerRevealed=false})}
+  function nextQuestion(){if(!isHost||!room||room.phase!=='judged')return;updateRoom(current=>{current.index++;if(current.index>=current.questions.length){current.questions=shuffleQuestions();current.index=0}current.phase='waiting';current.phaseStartedAt=null;current.buzz=null;current.result=null;answerPromptKey='';answerPending=false;answerInput.value=''})}
   function leaveRoom(remove=true){
     clearInterval(tickTimer);clearTimeout(pendingJoinTimer);pendingJoinTimer=null;
     const oldPeer=peer,oldHostConnection=hostConnection,wasHost=isHost;
@@ -190,7 +210,8 @@
   $('#createButton').addEventListener('click',createRoom);$('#joinButton').addEventListener('click',joinRoom);$('#leaveButton').addEventListener('click',()=>leaveRoom(true));
   $('#showJoinButton').addEventListener('click',()=>{$('#joinForm').classList.remove('hidden');$('#showJoinButton').classList.add('hidden');codeInput.focus();setError('')});
   $('#cancelJoinButton').addEventListener('click',()=>{$('#joinForm').classList.add('hidden');$('#showJoinButton').classList.remove('hidden');codeInput.value='';setError('')});
-  buzzer.addEventListener('click',buzz);$('#startRoundButton').addEventListener('click',startRound);$('#correctButton').addEventListener('click',()=>judge(true));$('#incorrectButton').addEventListener('click',()=>judge(false));$('#nextButton').addEventListener('click',nextQuestion);
+  buzzer.addEventListener('click',buzz);$('#startRoundButton').addEventListener('click',startRound);$('#nextButton').addEventListener('click',nextQuestion);answerForm.addEventListener('submit',submitAnswer);
+  answerInput.addEventListener('input',()=>{const start=answerInput.selectionStart,end=answerInput.selectionEnd,lower=answerInput.value.toLowerCase();if(answerInput.value!==lower){answerInput.value=lower;answerInput.setSelectionRange(start,end)}});
   $('#copyCode').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(roomCode);showToast('Room code copied. Send it to your crew!')}catch{showToast(`Room code: ${roomCode}`)}});
   codeInput.addEventListener('input',()=>{codeInput.value=codeInput.value.toUpperCase().replace(/[^A-Z0-9]/g,'')});
   [nameInput,codeInput].forEach(el=>el.addEventListener('keydown',e=>{if(e.key==='Enter'){if(el===codeInput)joinRoom();else createRoom()}}));
